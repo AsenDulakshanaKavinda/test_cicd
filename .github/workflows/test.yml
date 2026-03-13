@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: [ "main" ]
 
+env:
+  # This addresses the deprecation warning you received
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true 
+  PYTHONPATH: .
+
 jobs:
   run-tests:
     runs-on: ubuntu-latest
@@ -15,7 +20,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v5
         with:
-          enable-cache: true # Speeds up subsequent runs
+          enable-cache: true
 
       - name: Set up Python
         run: uv python install 3.13
@@ -24,5 +29,5 @@ jobs:
         run: uv sync --all-extras --dev
 
       - name: Run Pytest
-        # uv run ensures pytest is executed within the project virtualenv
+        # We use 'uv run' to ensure we use the virtualenv created by 'uv sync'
         run: uv run pytest
