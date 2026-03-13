@@ -1,4 +1,5 @@
-name: Test FastAPI with uv
+
+name: Python CI Pipeline
 
 on:
   push:
@@ -6,28 +7,26 @@ on:
   pull_request:
     branches: [ "main" ]
 
-env:
-  # This addresses the deprecation warning you received
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true 
-  PYTHONPATH: .
-
 jobs:
-  run-tests:
+  build-and-test:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+    - name: Checkout Code
+      uses: actions/checkout@v4
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
-        with:
-          enable-cache: true
+    - name: Ste up python
+      uses: actions/checkout@v5
+      with:
+        python-version: '3.11'
+        cache: 'pip'
 
-      - name: Set up Python
-        run: uv python install 3.13
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
 
-      - name: Install dependencies
-        run: uv sync --all-extras --dev
+    - name: Run tests
+      run: |
+        pytest
 
-      - name: Run Pytest
-        # We use 'uv run' to ensure we use the virtualenv created by 'uv sync'
-        run: uv run pytest
