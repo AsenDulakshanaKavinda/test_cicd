@@ -9,9 +9,9 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    # Required to access the secrets in your 'dev' environment
     environment: dev
     
-    # Define environment variables from GitHub Secrets
     env:
       MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
 
@@ -28,11 +28,22 @@ jobs:
       - name: Check Container Statuses
         run: docker compose ps
 
+      - name: Wait for API Healthcheck
+        # This loop waits up to 30s for the container to report 'healthy' 
+        # based on the healthcheck defined in your docker-compose.yml
+        run: |
+          echo "Waiting for my_chatbot_api to be healthy..."
+          timeout 30s bash -c 'until [ "$(docker inspect -f {{.State.Health.Status}} $(docker compose ps -q my_chatbot_api))" == "healthy" ]; do sleep 1; done'
+
+      - name: Run Functional Tests (Pytest)
+        # Runs pytest inside the running API container
+        run: docker compose exec -T my_chatbot_api pytest
+
       - name: Debug Logs on Failure
         if: failure()
         run: |
-          docker compose logs medical_chatbot_api
-          docker compose logs medical_chatbot_ui
+          docker compose logs my_chatbot_api
+          docker compose logs my_chatbot_ui
 
       - name: Shutdown and Cleanup
         if: always()
