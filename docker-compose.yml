@@ -18,6 +18,6 @@ services:
     ports:
       - "8501:8501"
     depends_on:
-      medical_chatbot_api:
-        condition: service_healthy
+      - my_chatbot_api
+        
   
