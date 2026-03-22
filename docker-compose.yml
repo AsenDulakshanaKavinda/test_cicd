@@ -1,5 +1,3 @@
-# test_cicd
-
 version: "3.9"
 
 services:
@@ -9,15 +7,9 @@ services:
       dockerfile: Docker/api.Dockerfile
     environment:
       - MISTRAL_API_KEY=${MISTRAL_API_KEY}
-      - PINECONE_API_KEY=${PINECONE_API_KEY}
     ports:
       - "8000:8000"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-      start_period: 120s
+
 
   my_chatbot_ui:
     build: 

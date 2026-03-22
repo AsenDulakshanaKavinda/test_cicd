@@ -1,0 +1,38 @@
+name: Docker Compose CI/CD Test
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    # Define environment variables from GitHub Secrets
+    env:
+      MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Validate Docker Compose Syntax
+        run: docker compose config
+
+      - name: Build and Start Services
+        run: docker compose up -d --build
+
+      - name: Check Container Statuses
+        run: docker compose ps
+
+      - name: Debug Logs on Failure
+        if: failure()
+        run: |
+          docker compose logs medical_chatbot_api
+          docker compose logs medical_chatbot_ui
+
+      - name: Shutdown and Cleanup
+        if: always()
+        run: docker compose down -v
