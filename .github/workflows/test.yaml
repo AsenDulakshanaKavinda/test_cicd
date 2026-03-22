@@ -31,8 +31,8 @@ jobs:
       - name: Debug Logs on Failure
         if: failure()
         run: |
-          docker compose logs medical_chatbot_api
-          docker compose logs medical_chatbot_ui
+          docker compose logs my_chatbot_api
+          docker compose logs my_chatbot_ui
 
       - name: Shutdown and Cleanup
         if: always()
