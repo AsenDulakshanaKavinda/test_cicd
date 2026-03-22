@@ -8,6 +8,7 @@ WORKDIR /app
 COPY pyproject.toml .
 
 # 3.2 install the dependencies
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 RUN pip install uv && uv pip install --system .
 
 # 4. copy project files

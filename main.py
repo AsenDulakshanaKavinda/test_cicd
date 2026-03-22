@@ -1,4 +1,4 @@
-from fastapi import FastAPI, status
+from fastapi import FastAPI, status, HTTPException
 from agent.my_agent import my_agent
 from pydantic import BaseModel
 
@@ -30,4 +30,4 @@ def reply(request: ChatRequest):
         }
 
     except Exception as e:
-        RuntimeError(f"Error while reply: {str(e)}")
+        raise HTTPException(detail=f"Error while reply: {str(e)}", status_code=500)
